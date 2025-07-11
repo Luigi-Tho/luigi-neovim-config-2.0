@@ -9,8 +9,19 @@ return {
     dependencies = { 'mfussenegger/nvim-dap' },
   },
   config = function()
+    require('mason-nvim-dap').setup {
+      ensure_installed = { 'codelldb', 'delve', 'node-debug2-adapter' },
+    }
     require('dap-vscode-js').setup {
-      adapters = { 'pwa-node' },
+      adapters = { 'pwa-node', 'codelldb' },
+    }
+    local dap = require 'dap'
+    dap.adapters.codelldb = {
+      type = 'executable',
+      command = 'codelldb', -- or if not in $PATH: "/absolute/path/to/codelldb"
+
+      -- On windows you may have to uncomment this:
+      -- detached = false,
     }
     for _, language in ipairs { 'typescript', 'javascript' } do
       require('dap').configurations[language] = {
