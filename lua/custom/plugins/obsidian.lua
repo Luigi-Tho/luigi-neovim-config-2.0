@@ -12,6 +12,8 @@ return {
       .. vim.fn.expand '~'
       .. '/Documents/Knowledge-Vault/',
     'BufReadPre ' .. vim.fn.expand '~' .. '/Documents/Knowledge-Vault/**.md',
+    'BufReadPre ' .. vim.fn.expand '~' .. '/Documents/Church-Thoughts/',
+    'BufReadPre ' .. vim.fn.expand '~' .. '/Documents/Church-Thoughts/**.md',
   },
   dependencies = {
     -- Required.
@@ -23,6 +25,10 @@ return {
         {
           name = 'personal',
           path = vim.fn.expand '~' .. '/Documents/Knowledge-Vault/',
+        },
+        {
+          name = 'church',
+          path = vim.fn.expand '~' .. '/Documents/Church-Thoughts/',
         },
       },
       ui = { enable = false },
