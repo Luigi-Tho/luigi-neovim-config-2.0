@@ -22,6 +22,61 @@ return {
         adapters = {
           require 'neotest-jest' {
             jestCommand = 'npm test',
+    'igorlfs/nvim-dap-view',
+    ---@module 'dap-view'
+    ---@type dapview.Config
+    opts = {},
+  },
+  config = function()
+    require('cmp').setup {
+      enabled = function()
+        return vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt' or require('cmp_dap').is_dap_buffer()
+      end,
+    }
+    require('cmp').setup.filetype({ 'dap-repl', 'dapui_watches', 'dapui_hover' }, {
+      sources = {
+        { name = 'dap' },
+      },
+    })
+    require('mason-nvim-dap').setup {
+      ensure_installed = { 'codelldb', 'delve', 'node-debug2-adapter' },
+    }
+    require('dap-vscode-js').setup {
+      adapters = { 'pwa-node', 'codelldb' },
+    }
+    local dap = require 'dap'
+    dap.adapters.codelldb = {
+      type = 'executable',
+      command = 'codelldb', -- or if not in $PATH: "/absolute/path/to/codelldb"
+
+      -- On windows you may have to uncomment this:
+      -- detached = false,
+    }
+    for _, language in ipairs { 'typescript', 'javascript' } do
+      require('dap').configurations[language] = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+        },
+        {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Attach',
+          processId = require('dap.utils').pick_process,
+          cwd = '${workspaceFolder}',
+        },
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Debug Jest Tests',
+          -- trace = true, -- include debugger info
+          runtimeExecutable = 'node',
+          runtimeArgs = {
+            './node_modules/jest/bin/jest.js',
+            '--runInBand',
           },
         },
       }
